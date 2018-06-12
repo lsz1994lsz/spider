@@ -8,13 +8,12 @@ import time
 
 from database_connection_handle import DatabaseConnectionHandle
 
+
 class ShortPositionsPipeline(object):
 
     def __init__(self):
         databaseConnectionHandle = DatabaseConnectionHandle()
         self.conn = databaseConnectionHandle.get_spider_connection()
-
-
 
     def process_item(self, item, spider):
 
@@ -27,8 +26,7 @@ class ShortPositionsPipeline(object):
                 self.save_to_mysql(item)
         return item
 
-
-    def save_to_mysql(self,item):
+    def save_to_mysql(self, item):
         cur = self.conn.cursor()
 
         trade_date = item['trade_date']
@@ -39,17 +37,19 @@ class ShortPositionsPipeline(object):
         short_positions_amount = item['short_positions_amount']
         record_timestamp = time.time()
 
-
-
         sql = "insert into short_position( `stock_code` , `trade_date_timestamp` , `short_positions_shares` , `short_positions_amount` , `record_timestamp` ) values(%s,%s,%s,%s,%s)"
 
-        result = cur.execute(sql, (stock_code,trade_date_timestamp,short_positions_shares,short_positions_amount,record_timestamp ))
-
-
+        result = cur.execute(
+            sql,
+            (stock_code,
+             trade_date_timestamp,
+             short_positions_shares,
+             short_positions_amount,
+             record_timestamp))
 
         self.conn.commit()
 
-    def __fix_stock_code(self,simple_stock_code):
+    def __fix_stock_code(self, simple_stock_code):
 
         length = len(simple_stock_code)
 
@@ -68,7 +68,6 @@ class ShortPositionsPipeline(object):
 
     def __close_spider(self):
         self.conn.close()
-
 
     def __is_existed_in_db(self, item):
 

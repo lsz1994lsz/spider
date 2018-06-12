@@ -1,37 +1,40 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for shareholding project
+# Scrapy settings for ipv4 project
 #
 # For simplicity, this file contains only the most important settings by
 # default. All the other settings are documented here:
 #
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #
-TELNETCONSOLE_PORT = 12344
-WEBSERVICE_PORT = 54324
-BOT_NAME = 'shareholding'
 
-SPIDER_MODULES = ['shareholding.spiders']
-NEWSPIDER_MODULE = 'shareholding.spiders'
+BOT_NAME = 'ipv4'
 
+SPIDER_MODULES = ['ipv4.spiders']
+NEWSPIDER_MODULE = 'ipv4.spiders'
+
+# ===============================
+TELNETCONSOLE_PORT = 12347
+WEBSERVICE_PORT = 54327
 # ==============日志相关=================
 # 自定义的日志，默认为ERROR，可用级别为：CRITICAL，ERROR，WARNING，INFO，DEBUG
 CUSTOM_LOG_LEVEL = ['ERROR','INFO']
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'shareholding (+http://www.yourdomain.com)'
+#USER_AGENT = 'real_time_indexes (+http://www.yourdomain.com)'
 # ================piplines=======================
 ITEM_PIPELINES = {
-    'shareholding.pipelines.ShareholdingPipeline': 600,
+    'ipv4.pipelines.Ipv4Pipeline': 600,
 }
 # ==================模拟真实===========================
 #取消默认的useragent,使用新的useragent
 # DOWNLOADER_MIDDLEWARES = {
-        # 'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,#关闭默认下载器
-        # 'agency_middlewares.JavaScriptMiddleware': 500,  # 键为中间件类的路径，值为中间件的顺序
+#         'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,#关闭默认下载器
+#         'agency_middlewares.JavaScriptMiddleware': 500,  # 键为中间件类的路径，值为中间件的顺序
 # }
 # 启用代理
-# ENABLE_PROXY = True
-# GET_PROXY_URL = "http://www.xdaili.cn/ipagent/greatRecharge/getGreatIp?spiderId=fa88b90f2a194d7cbd76b89795a2ee66&orderno=YZ2017815605yJ6Xxz&returnType=1&count=1"
+ENABLE_PROXY = False
+GET_PROXY_URL = "http://www.xdaili.cn/ipagent/greatRecharge/getGreatIp?spiderId=fa88b90f2a194d7cbd76b89795a2ee66&orderno=YZ2017815605yJ6Xxz&returnType=1&count=1"
 # ==============oss相关==========================
 SPIDER_MIDDLEWARES = {
     'oss_middlewares.OSSMiddleWares':150,
@@ -50,7 +53,7 @@ MAIL_PASS  = "CmTpG4vH5UtWZYgA"  # 授权码
 
 # ===============其他============================
 # 下载延迟
-DOWNLOAD_DELAY = 20
+# DOWNLOAD_DELAY = 31
 #请求失败重试
 RETRY_ENABLED = True
 #item条数显示刷新频率
@@ -62,8 +65,10 @@ ROBOTSTXT_OBEY = False
 # 对网站网站多少并发线程,启用CONCURRENT_REQUESTS_PER_IP此项不生效
 # CONCURRENT_REQUESTS_PER_DOMAIN = 5
 #对IP多少并发线程
-CONCURRENT_REQUESTS_PER_IP = 5
+CONCURRENT_REQUESTS_PER_IP = 20
 
 HTTPERROR_ALLOWED_CODES = [404]
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'hk_stock_positions_record (+http://www.yourdomain.com)'
+#USER_AGENT = 'index_daily_bulletin (+http://www.yourdomain.com)'
+# 重定向
+REDIRECT_ENABLED = False

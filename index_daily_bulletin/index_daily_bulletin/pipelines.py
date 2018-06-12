@@ -12,9 +12,10 @@ from database_connection_handle import DatabaseConnectionHandle
 
 class IndexDailyBulletinPipeline(object):
     def __init__(self):
-        handler = DatabaseConnectionHandle()
-        self.conn = MySQLdb.connect(host='114.215.177.242', port=3306, user='spiderdb', passwd='Cqmyg321',
-                                    db='spiderdb', charset='utf8')
+        databaseConnectionHandle = DatabaseConnectionHandle()
+        self.conn = databaseConnectionHandle.get_spider_connection()
+        # self.conn = MySQLdb.connect(host='218.244.138.88', port=13456, user='spiderdb', passwd='Cqmyg321',
+        #                             db='spiderdb', charset='utf8')
 
     def process_item(self, item, spider):
         self.item = item

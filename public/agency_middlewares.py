@@ -23,6 +23,7 @@ class JavaScriptMiddleware(object):
     def __init__(self,crawler):
         # 初始化代理超时计数
         self.timeout_time = 0
+        self.driver_status = False
         # crawler.set('ENABLE_PROXY',11111)
         # a = crawler.get('ENABLE_PROXY')
         # print a
@@ -36,10 +37,16 @@ class JavaScriptMiddleware(object):
 
     def process_request(self, request, spider):
         try:
-            self.driver.get(request.url)
-            sleep(random.uniform(1, 1.25))
+            if self.driver_status:
+                self.driver.get(request.url)
+            else:
+                self.create_ua_proxy()
+                self.driver.get(request.url)
+            sleep(random.uniform(0,2))
             content = self.driver.page_source.encode('utf-8')
             # self.driver.refresh()
+            self.driver.quit()
+            self.driver_status = False
             return HtmlResponse(request.url, encoding='utf-8', body=content, request=request)
 
         except TimeoutException or socket.error or selenium.common.exceptions.WebDriverException,e:
@@ -53,6 +60,8 @@ class JavaScriptMiddleware(object):
             print repr(e)
             print e,
             scrapy.log.msg(repr(e),e, level=log.WARNING)
+            self.driver.quit()
+            self.driver_status = False
 
         return HtmlResponse(request.url, encoding='utf-8', request=request)
         # return HtmlResponse(request.url, encoding='utf-8', body=content, request=request)
@@ -107,7 +116,7 @@ class JavaScriptMiddleware(object):
                         scrapy.log.msg( "'代理IP已用完'", level=log.WARNING)
                         raise Exception('代理IP已用完')
                     if '"ERRORCODE":"10055"' in line:
-                        sleep(random.uniform(1, 5))
+                        sleep(random.uniform(10, 20))
                     line = line.strip('{"ERRORCODE":"0","RESULT":[{"port":"').strip('"}]}')
                     line = line.split('","ip":"')
                     if len(line) == 2:
@@ -177,7 +186,8 @@ class JavaScriptMiddleware(object):
             # self.driver.execute_script(newwindow)
 
         # 设置5秒页面超时返回，类似于requests.get()的timeout选项，不设置程序会卡住
-        self.driver.set_page_load_timeout(50)
+        self.driver.set_page_load_timeout(10)
+        self.driver_status = True
 
     # 记录和重置错误计数器
     def timeout_counter(self):
@@ -186,7 +196,7 @@ class JavaScriptMiddleware(object):
             scrapy.log.msg('proxy--timeout：' + str(self.timeout_time), level=log.WARNING)
             if self.timeout_time < 2:
                 pass
-            elif self.timeout_time < 5:
+            elif self.timeout_time < 3:
                 self.check_proxy()
             else:
                 scrapy.log.msg('update_proxy:time_over', level=log.WARNING)
