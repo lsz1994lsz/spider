@@ -4,7 +4,7 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-
+from database_connection_handle import DatabaseConnectionHandle
 
 import MySQLdb
 import traceback
@@ -17,13 +17,13 @@ class MarketFlowPipeline(object):
 
     def process_item(self, item, spider):
 	# self.dbpool = adbapi.ConnectionPool('MySQLdb', db='moive_get',user='lin', passwd='linhongbin', cursorclass=MySQLdb.cursors.DictCursor,charset='utf8', use_unicode=True)
-	host = '114.215.177.242'
-	port = '3306'
-	dbName = 'spiderdb'
-	user = 'spiderdb'
-	password = 'Cqmyg321'
-	charset = 'utf8'
-	conn = MySQLdb.connect(host=host,user=user,passwd=password,db=dbName,port=int(port),charset=charset)
+	# host = '114.215.177.242'
+	# port = '3306'
+	# dbName = 'spiderdb'
+	# user = 'spiderdb'
+	# password = 'Cqmyg321'
+	# charset = 'utf8'
+	# conn = MySQLdb.connect(host=host,user=user,passwd=password,db=dbName,port=int(port),charset=charset)
 	# host = '218.244.138.88'
 	# port = '13456'
 	# dbName = 'spiderdb'
@@ -31,6 +31,8 @@ class MarketFlowPipeline(object):
 	# password = 'Cqmyg321'
 	# charset = 'utf8'
 	# conn = MySQLdb.connect(host=host,user=user,passwd=password,db=dbName,port=int(port),charset=charset)
+	databaseConnectionHandle = DatabaseConnectionHandle()
+	conn = databaseConnectionHandle.get_spider_connection()
 
 
 

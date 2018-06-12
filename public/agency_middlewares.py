@@ -37,22 +37,22 @@ class JavaScriptMiddleware(object):
     def process_request(self, request, spider):
         try:
             self.driver.get(request.url)
-            sleep(random.uniform(1, 1.25))
+            sleep(random.uniform(1.9, 2))
             content = self.driver.page_source.encode('utf-8')
             # self.driver.refresh()
             return HtmlResponse(request.url, encoding='utf-8', body=content, request=request)
 
         except TimeoutException or socket.error or selenium.common.exceptions.WebDriverException,e:
             # print e,e.msg
-            scrapy.log.msg(e,e.msg, level=log.WARNING)
+            scrapy.log.msg(e, e.msg, level=log.WARNING)
             self.timeout_counter()
         except urllib2.URLError,e:
             scrapy.log.msg(Exception.__class__,e, level=log.WARNING)
-        except Exception,e:
+        except Exception, e:
             print e.__class__
             print repr(e)
             print e,
-            scrapy.log.msg(repr(e),e, level=log.WARNING)
+            scrapy.log.msg(repr(e), e, level=log.WARNING)
 
         return HtmlResponse(request.url, encoding='utf-8', request=request)
         # return HtmlResponse(request.url, encoding='utf-8', body=content, request=request)
@@ -84,7 +84,7 @@ class JavaScriptMiddleware(object):
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
             "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.0 Safari/536.3",
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24",
-            "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
+            "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24",
             "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
             "Mozilla/4.0 (compatible; MSIE 7.0; AOL 9.5; AOLBuild 4337.35; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
             "Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)",
@@ -96,6 +96,7 @@ class JavaScriptMiddleware(object):
         ]
 
         # 使用代理
+
         if self.ENABLE_PROXY:
             self.proxy_list = []
             while len(self.proxy_list) == 0:
@@ -103,15 +104,37 @@ class JavaScriptMiddleware(object):
                 self.proxy = urllib.urlopen(self.get_proxy_url)
                 for line in self.proxy:
                     print line
-                    if '"ERRORCODE":"10074"' in line:
+                    if '"code":"3006"' in line:
+                        scrapy.log.msg("'提取数量已用完'", level=log.WARNING)
+                        raise Exception('提取数量已用完')
+                    elif '"code":"3003"' in line:
+                        scrapy.log.msg("'提取失败，请重试'", level=log.WARNING)
+                        raise Exception('提取失败，请重试')
+                    elif '"code":"3004"' in line:
+                        scrapy.log.msg("'查不到订单，请输入正确的appKey'", level=log.WARNING)
+                        raise Exception('查不到订单，请输入正确的appKey')
+                    elif '"code":"3005"' in line:
+                        scrapy.log.msg("'订单已过期!'", level=log.WARNING)
+                        raise Exception('订单已过期!')
+                    elif '"code":"3010"' in line:
+                        scrapy.log.msg("'订单异常被冻结'", level=log.WARNING)
+                        raise Exception('订单异常被冻结')
+                    elif '"code":"3001"' in line:
+                        scrapy.log.msg("'提取频繁，请重试'", level=log.WARNING)
+                        sleep(random.uniform(5, 10))
+                    elif '"ERRORCODE":"10032"' in line:
+                        scrapy.log.msg("'今日提取已达上限，请隔日提取或额外购买'", level=log.WARNING)
+                        raise Exception('今日提取已达上限，请隔日提取或额外购买')
+                    elif '"ERRORCODE":"10055"' in line:
+                        scrapy.log.msg("'提取过快，请至少5秒提取一次'", level=log.WARNING)
+                        sleep(random.uniform(20, 25))
+                    elif '"ERRORCODE":"10074"' in line:
                         scrapy.log.msg( "'代理IP已用完'", level=log.WARNING)
                         raise Exception('代理IP已用完')
-                    if '"ERRORCODE":"10055"' in line:
-                        sleep(random.uniform(1, 5))
-                    line = line.strip('{"ERRORCODE":"0","RESULT":[{"port":"').strip('"}]}')
-                    line = line.split('","ip":"')
-                    if len(line) == 2:
-                        line = line[1] + ':' + line[0]
+                    else:
+                        line = re.search('{"(code|ERRORCODE)":"0","(msg|RESULT)":\[{"port":"(.*?)","ip":"(.*?)"}]}',line)
+                        print line.group(3),line.group(4)
+                        line = line.group(4) + ':' + line.group(3)
                         print "proxy :" + line
                         scrapy.log.msg( "proxy :" + line, level=log.WARNING)
                         self.proxy_list.append(line)
@@ -167,6 +190,7 @@ class JavaScriptMiddleware(object):
             # Chrome
             options = webdriver.ChromeOptions()
             # 设置为headless模式 （必须）
+            options.add_argument('no-sandbox')
             options.add_argument("--headless")
             self.driver = webdriver.Chrome(chrome_options=options)
 

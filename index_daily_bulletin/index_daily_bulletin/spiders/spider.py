@@ -16,6 +16,10 @@ from index_daily_bulletin.items import IndexDailyBulletinItem
 from lxml import etree
 from ..settings import *
 
+import scrapy
+from scrapy import log
+from scrapy import Selector, Request
+from scrapy.contrib.spiders import CrawlSpider
 
 class Spider(CrawlSpider):
     CustomLog(CUSTOM_LOG_LEVEL)
@@ -47,22 +51,26 @@ class Spider(CrawlSpider):
         body = str((response.body).decode(WEB_PAGE_ENCODING,'ignore')).encode('utf8')
         body_line = body.splitlines(True)
         print len(body_line)
-
-        for i in body_line:
-            data = i.replace('"', '').replace('\r\n','').split('\t')
-            if body_line.index(i) > 1:
-                if len(body_line) == 3:
-                    table_type = 1
-                    print data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9]
-                    positions_record_data = self.parase_str_list(data,table_type)
-                    yield positions_record_data
-                #
-                if len(body_line) == 8:
-                    table_type = 2
-                    print data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[
-                        10], data[11], data[12]
-                    positions_record_data = self.parase_str_list(data,table_type)
-                    yield positions_record_data
+        print response.status
+        if response.status != 404:
+            if len(body_line) > 0:
+                for i in body_line:
+                    data = i.replace('"', '').replace('\r\n','').split('\t')
+                    if body_line.index(i) > 1:
+                        if len(body_line) == 3:
+                            table_type = 1
+                            print data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9]
+                            positions_record_data = self.parase_str_list(data,table_type)
+                            yield positions_record_data
+                        #
+                        if len(body_line) == 8:
+                            table_type = 2
+                            print data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[
+                                10], data[11], data[12]
+                            positions_record_data = self.parase_str_list(data,table_type)
+                            yield positions_record_data
+            else:
+                scrapy.log.msg("没有数据" , level=log.ERROR)
 
 
 

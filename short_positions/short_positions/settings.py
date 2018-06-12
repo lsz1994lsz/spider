@@ -9,7 +9,7 @@ TELNETCONSOLE_PORT = 12343
 WEBSERVICE_PORT = 54323
 # ==============日志相关=================
 # 自定义的日志，默认为ERROR，可用级别为：CRITICAL，ERROR，WARNING，INFO，DEBUG
-CUSTOM_LOG_LEVEL = ['ERROR','INFO']
+CUSTOM_LOG_LEVEL = ['ERROR', 'INFO']
 # 全局日志开关
 # LOG_ENABLED = True
 # 日志编码
@@ -30,10 +30,10 @@ ITEM_PIPELINES = {
     'short_positions.pipelines.ShortPositionsPipeline': 300,
 }
 # ==================模拟真实===========================
-#取消默认的useragent,使用新的useragent
+# 取消默认的useragent,使用新的useragent
 # DOWNLOADER_MIDDLEWARES = {
-        # 'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,#关闭默认下载器
-        # 'agency_middlewares.JavaScriptMiddleware': 500,  # 键为中间件类的路径，值为中间件的顺序
+# 'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,#关闭默认下载器
+# 'agency_middlewares.JavaScriptMiddleware': 500,  # 键为中间件类的路径，值为中间件的顺序
 # }
 # 启用代理
 # ENABLE_PROXY = True
@@ -41,7 +41,7 @@ ITEM_PIPELINES = {
 
 # ===================OSS==============================
 SPIDER_MIDDLEWARES = {
-    'oss_middlewares.OSSMiddleWares':150,
+    'oss_middlewares.OSSMiddleWares': 150,
     'error_email.EmailSender': 500,
 }
 OSS_ACCESS_KEY_ID = 'iTXgd33xkJwEQ41U'
@@ -54,18 +54,18 @@ WEB_PAGE_ENCODING = 'utf8'
 # =================邮件相关==========================
 MAIL_HOST = "smtp.exmail.qq.com"  # 发送邮件的smtp服务器
 MAIL_USER = "lsz@guruhk.com"  # 发件人的用户名/邮箱账号/收件人邮箱账号
-MAIL_PASS  = "CmTpG4vH5UtWZYgA"  # 授权码
+MAIL_PASS = "CmTpG4vH5UtWZYgA"  # 授权码
 # ===============其他============================
 # 下载延迟
 # DOWNLOAD_DELAY = 10
-#请求失败重试
+# 请求失败重试
 RETRY_ENABLED = True
-#item条数显示刷新频率
+# item条数显示刷新频率
 LOGSTATS_INTERVAL = 120
 # 下载超时
 DOWNLOAD_TIMEOUT = 300
 
-#对IP多少并发线程
+# 对IP多少并发线程
 CONCURRENT_REQUESTS_PER_IP = 1
 
 # 重定向

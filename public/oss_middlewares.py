@@ -48,8 +48,9 @@ class OSSMiddleWares(object):
                 # spider_name = os.path.split(os.getcwd())[-1]
                 record_date, record_time = self.__get_time()
                 oss_url = self.url.replace('/', '{:}')
-                file_name = 'source' + '/' + self.spider_name + '/' + datetime.datetime.now().strftime('%Y-%m') + '/' + datetime.datetime.now().strftime('%d') + '/' + oss_url + ' = ' + record_time
-                # file_name = 'ceshi' + '/' + self.spider_name + '/' + datetime.datetime.now().strftime('%Y-%m') + '/' + datetime.datetime.now().strftime('%d') + '/' + oss_url + ' = ' + record_time
+                # file_name = 'source' + '/' + spider_name + '/' + record_date + '/' + oss_url + ' = ' + record_time
+                file_name = 'ceshi' + '/' + self.spider_name + '/' + datetime.datetime.now().strftime('%Y-%m') + '/' + datetime.datetime.now().strftime('%d') + '/' + record_time
+                # file_name = 'source' + '/' + self.spider_name + '/' + datetime.datetime.now().strftime('%Y-%m') + '/' + datetime.datetime.now().strftime('%d') + '/' + record_time
                 auth = oss2.Auth(self.OSS_ACCESS_KEY_ID,self.OSS_ACCESS_KEY_SECRET)
 
                 def percentage(consumed_bytes, total_bytes):

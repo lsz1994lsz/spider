@@ -16,7 +16,10 @@ from scrapy.http import Request
 from short_data.items import ShortDataItem
 from ..settings import *
 from custom_log_v2 import CustomLog
-
+import scrapy
+from scrapy import log
+from scrapy import Selector, Request
+from scrapy.contrib.spiders import CrawlSpider
 
 class ShortDataSpider(CrawlSpider):
     CustomLog(CUSTOM_LOG_LEVEL)
@@ -112,10 +115,12 @@ class ShortDataSpider(CrawlSpider):
         str_list_filted = []
         text = re.findall(ur"[^%]\s\d+\s|\d+,\d+[,\d]*", line)
 
-        for use in text:
-            use = use.replace(',','').replace("\n", "").replace("\r", "").replace(" ", "")
-            str_list_filted.append(use)
-
+        if text > 0:
+            for use in text:
+                use = use.replace(',','').replace("\n", "").replace("\r", "").replace(" ", "")
+                str_list_filted.append(use)
+        else:
+            scrapy.log.msg("没有数据" , level=log.ERROR)
         short_data = ShortDataItem()
 
         list_filted_len = len(str_list_filted)
