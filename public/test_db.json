@@ -1,0 +1,15 @@
+{
+	"mysql":{
+		"host":"218.244.138.88",
+		"port":13456,
+		"user":"spiderdb",
+		"passwd":"Cqmyg321",
+		"db":"spiderdb"
+	},
+	"redis":{
+		"host":"218.244.138.88",
+		"port":14555,
+		"db":1,
+		"password":""
+	}
+}
